@@ -1,6 +1,6 @@
 <?php
 
-namespace learxd\anticheat\window {
+namespace yourdirectory\window {
 
     use pocketmine\event\inventory\InventoryTransactionEvent;
     use pocketmine\event\Listener;
