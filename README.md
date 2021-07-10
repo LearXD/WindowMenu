@@ -6,7 +6,7 @@
 Uma pequena biblioteca para criação de menus customizados para a API 2.0.0 do Pocketmine-MP
 
 ## Exemplo de uso:
-### Não sei usar o readme.me, me desculpem :,D
+### Não sei usar o readme.md, me desculpem :,D
  </p>
 
 ```php
