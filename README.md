@@ -14,7 +14,7 @@ $window = new Window(
   /* Player */ $player, 
   /* string */ "Nome da sua Window", 
   function (InventoryTransactionEvent $event, Player $player, Item $item){
-      if(#item->getId() !== 0){
+      if($item->getId() !== 0){
         $event->setCancelled(true);
         $player->removeWindow(WindowManager::getPlayerWindow($player));
         $player->sendMessage("Você pegou o item: §f" . $item->getId());
