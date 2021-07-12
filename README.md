@@ -14,10 +14,13 @@ $window = new Window(
   /* Player */ $player, 
   /* string */ "Nome da sua Window", 
   function (InventoryTransactionEvent $event, Player $player, Item $item){
-      $event->setCancelled(true);
-      $player->removeWindow(WindowManager::getPlayerWindow($player));
-      $player->sendMessage("Você pegou o item: §f" . $item->getId());
-  });
+      if(#item->getId() !== 0){
+        $event->setCancelled(true);
+        $player->removeWindow(WindowManager::getPlayerWindow($player));
+        $player->sendMessage("Você pegou o item: §f" . $item->getId());
+      }
+  },
+  /* int */ 20);
   
 // ADICIONAR UM ITEM NA WINDOW
 $window->addItem(Item::get(Item::WOOL, Wool::PINK)->setCustomName("§dNome do Item"));
