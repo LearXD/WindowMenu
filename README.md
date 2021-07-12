@@ -1,13 +1,12 @@
 <p align="center">
-
-  # WindowMenu
+ # WindowMenu
   
 ### API: 2.0.0
 Uma pequena biblioteca para criação de menus customizados para a API 2.0.0 do Pocketmine-MP
 
 ## Exemplo de uso:
 ### Não sei usar o readme.md, me desculpem :,D
- </p>
+</p>
 
 ```php
 $window = new Window($this->owner, $event->getPlayer(), "Nome da sua Window", function (InventoryTransactionEvent $event, Player $player, Item $item){
