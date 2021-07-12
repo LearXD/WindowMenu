@@ -8,12 +8,21 @@ Uma pequena biblioteca para criação de menus customizados para a API 2.0.0 do 
 
 
 ```php
-$window = new Window($this->owner, $event->getPlayer(), "Nome da sua Window", function (InventoryTransactionEvent $event, Player $player, Item $item){
-            $event->setCancelled(true);
-            $player->removeWindow(WindowManager::getPlayerWindow($player));
-            $player->sendMessage("Você pegou o item: §f" . $item->getId());
-        });
+// CRIANDO O OBJETO DA WINDOW
+$window = new Window(
+  /* Plugin */ $this->owner,
+  /* Player */ $player, 
+  /* string */ "Nome da sua Window", 
+  function (InventoryTransactionEvent $event, Player $player, Item $item){
+      $event->setCancelled(true);
+      $player->removeWindow(WindowManager::getPlayerWindow($player));
+      $player->sendMessage("Você pegou o item: §f" . $item->getId());
+  });
+  
+// ADICIONAR UM ITEM NA WINDOW
 $window->addItem(Item::get(Item::WOOL, Wool::PINK)->setCustomName("§dNome do Item"));
-/* Player */ $player->addWindow($window);
+
+// ENVIAR A WINDOW PARA O PLAYER
+$player->addWindow($window);
 ```
 
