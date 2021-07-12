@@ -1,6 +1,6 @@
 <?php
 
-namespace yourdirectory\window {
+namespace learxd\anticheat\window {
 
     use pocketmine\event\inventory\InventoryTransactionEvent;
     use pocketmine\event\Listener;
@@ -22,17 +22,33 @@ namespace yourdirectory\window {
 
     final class WindowManager {
 
+        /** @var Window[] */
         protected static $players = [];
 
-        public static function addPlayerWindow(Player $player, Inventory $inventory){
+        /**
+         * @param Player $player
+         * @param Inventory $inventory
+         * @return Inventory
+         */
+        public static function addPlayerWindow(Player $player, Inventory $inventory): Window
+        {
             return self::$players[strtolower($player->getName())] = $inventory;
         }
 
-        public static function removePlayerWindow(Player $player){
+        /**
+         * @param Player $player
+         * @return bool
+         */
+        public static function removePlayerWindow(Player $player): bool
+        {
             if(isset(self::$players[strtolower($player->getName())])) unset(self::$players[strtolower($player->getName())]);
             return true;
         }
 
+        /**
+         * @param Player $player
+         * @return Window|null
+         */
         public static function getPlayerWindow(Player $player){
             if(isset(self::$players[strtolower($player->getName())]))
                 return self::$players[strtolower($player->getName())];
@@ -50,7 +66,8 @@ namespace yourdirectory\window {
             $this->inventory = $inventory;
         }
 
-        public function getInventory(){
+        public function getInventory(): Inventory
+        {
             return $this->inventory;
         }
 
@@ -60,8 +77,9 @@ namespace yourdirectory\window {
 
         /** @var string */
         protected $customName = "";
-        /** @var \Closure|callable */
-        protected $ctx = null;
+
+        /** @var int */
+        protected $countdown = 10;
 
         /** @var int  */
         protected $type = InventoryType::CHEST;
@@ -73,25 +91,42 @@ namespace yourdirectory\window {
         /** @var WindowHolder */
         protected $holder = null;
 
+        /** @var \Closure|callable */
+        protected $ctx = null;
+
         /** @var Plugin */
         protected $owner = null;
 
-        public function __construct(Plugin $provider, Position $position, string $name, callable $context, int $type = InventoryType::CHEST, int $size = 27) {
-            $this->customName = $name;
-            $this->pos = $position->add(0, 2);
-            $this->ctx = $context;
+        /**
+         * Window constructor.
+         * @param Plugin $provider
+         * @param Position $position
+         * @param string $name
+         * @param callable $context
+         * @param int $countdown
+         * @param int $type
+         * @param int $size
+         */
+        public function __construct(Plugin $provider, Position $position, string $name, callable $context, int $countdown = 10, int $type = InventoryType::CHEST, int $size = 27) {
             $this->owner = $provider;
-            /** NÃO PRECISA MAS... */
+            $this->pos = $position->add(0, 2);
+
+            $this->customName = $name;
+            $this->ctx = $context;
+
+            $this->countdown = $countdown;
+
+            $this->type = $type;
+            $this->size = $size;
+
             $this->holder = new WindowHolder($this->pos->x, $this->pos->y, $this->pos->z, $this);
             $provider->getServer()->getPluginManager()->registerEvents($this, $provider);
             parent::__construct($this->holder, InventoryType::get($type));
         }
 
-
-        public function setPosition(Position $position){
-            return $this->pos = $position;
-        }
-
+        /**
+         * @param Player $who
+         */
         public function onOpen(Player $who){
 
             $pk = new UpdateBlockPacket();
@@ -151,8 +186,7 @@ namespace yourdirectory\window {
                     $this->closure->call($this->window, $this->who);
                 }
 
-            }, 10);
-
+            }, $this->countdown);
         }
 
         public function onClose(Player $who){
@@ -192,18 +226,18 @@ namespace yourdirectory\window {
                     $this->closure->call($this->window, $this->who);
                 }
 
-            }, 10);
+            }, $this->countdown);
 
         }
 
-        public function onTransaction(InventoryTransactionEvent $event){
+        public function onTransaction(InventoryTransactionEvent $event) {
             $transaction = $event->getQueue();
             $player = $transaction->getPlayer();
 
             if($event->isCancelled())
                 return false;
 
-            if(WindowManager::getPlayerWindow($player) != $this)
+            if(($window = WindowManager::getPlayerWindow($player)) != $this)
                 return false;
 
             foreach($transaction->getTransactions() as $trans){
