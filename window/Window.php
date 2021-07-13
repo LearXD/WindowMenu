@@ -1,6 +1,6 @@
 <?php
 
-namespace learxd\anticheat\window {
+namespace directory\window {
 
     use pocketmine\event\inventory\InventoryTransactionEvent;
     use pocketmine\event\Listener;
@@ -237,7 +237,7 @@ namespace learxd\anticheat\window {
             if($event->isCancelled())
                 return false;
 
-            if(($window = WindowManager::getPlayerWindow($player)) != $this)
+            if(WindowManager::getPlayerWindow($player) !== $this)
                 return false;
 
             foreach($transaction->getTransactions() as $trans){
