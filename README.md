@@ -1,12 +1,10 @@
 # WindowMenu
   
 ### API: 2.0.0
-Uma pequena biblioteca para criação de menus customizados para a API 2.0.0 do Pocketmine-MP
+A small library for creating custom menus for the Pocketmine-MP API 2.0.0
 
-## Exemplo de uso:
-### Não sei usar o readme.md, me desculpem :,D
-
-
+<h1 align="center"> Usage: </h1>
+  
 ```php
 // CRIANDO O OBJETO DA WINDOW
 $window = new Window(
@@ -28,4 +26,5 @@ $window->addItem(Item::get(Item::WOOL, Wool::PINK)->setCustomName("§dNome do It
 // ENVIAR A WINDOW PARA O PLAYER
 $player->addWindow($window);
 ```
+
 
