@@ -1,30 +1,44 @@
-# WindowMenu
-  
-### API: 2.0.0
-A small library for creating custom menus for the Pocketmine-MP API 2.0.0
+<h1 align="center"> WindowMenu Api v0.2 </h1>
+<p align="center"> A small library for creating interactive windows. </p>
 
-<h1 align="center"> Usage: </h1>
-  
+<h2 align="center"> 🔨 Usage: </h1>
+
+<h3 align="center"> :nerd_face: Explanation: </h1>
+<p>● Registering the item handler so that events are called: </p>
+
 ```php
-// CRIANDO O OBJETO DA WINDOW
-$window = new Window(
-  /* Plugin */ $this->owner,
-  /* Player */ $player, 
-  /* string */ "Nome da sua Window", 
-  function (InventoryTransactionEvent $event, Player $player, Item $item){
-      if($item->getId() !== 0){
-        $event->setCancelled(true);
-        $player->removeWindow(WindowManager::getPlayerWindow($player));
-        $player->sendMessage("Você pegou o item: §f" . $item->getId());
-      }
-  },
-  /* int */ 20);
-  
-// ADICIONAR UM ITEM NA WINDOW
-$window->addItem(Item::get(Item::WOOL, Wool::PINK)->setCustomName("§dNome do Item"));
+// As a parameter you must pass the Main class!
+\your\directory\Window::registerHandler($this);
+```
+<p>● You can call the class just passing 4 parameters! The first is a provider, which may be your Main class. The second a Position, depending on the situation you can pass an instance of Player! The third is a string containing the menu name. The fourth and last containing a menu context. Example of a context: </p>
 
-// ENVIAR A WINDOW PARA O PLAYER
-$player->addWindow($window);
+```php
+// The menu Callable receives 3 parameters, an InventoryTransacion Event (which can and should be canceled), a Player object, and an Item Object (which has been transitioned)
+  
+$callable = function (InventoryTransactionEvent $event, Player $player, Item $item) {
+  // doing a little item check...
+  if($item->getId() == \pocketmine\item\Item::EMERALD and $item->getCustomName("§dItem Name")){
+    // removing the window
+    $player->removeWindow(\your\directory\WindowManager::getPlayerWindow($player));
+    // using the player variable '-'
+    $player->sendMessage("§aYou used window!");
+    // canceling event...
+    $event->setCanceled(true);
+  }
+}
+  
 ```
 
+<p>● Now that we've created our context, we can call our class Window: </p>
 
+```php
+// Return the class from our window!
+$window = new \your\directory\Window($this->owner, $player, "Window Name", $callable);
+
+// Adding an item to the window:
+$window->setItem(\your\directory\Window::ALIGN_CENTER, \pocketmine\item\Item::get(\pocketmine\item\Item::EMERALD)->setCustomName("§dItem Name"));
+
+// Sending the window to a player:
+$player->addWindow($window);
+```
+<p> Done! 🐨</p>
