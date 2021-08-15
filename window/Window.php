@@ -1,7 +1,8 @@
 <?php
 
-namespace directory\window {
+namespace your\directory {
 
+    use bridge\Main;
     use pocketmine\event\inventory\InventoryTransactionEvent;
     use pocketmine\event\Listener;
     use pocketmine\inventory\CustomInventory;
@@ -19,6 +20,7 @@ namespace directory\window {
     use pocketmine\Player;
     use pocketmine\plugin\Plugin;
     use pocketmine\scheduler\PluginTask;
+    use pocketmine\Server;
 
     final class WindowManager {
 
@@ -30,7 +32,7 @@ namespace directory\window {
          * @param Inventory $inventory
          * @return Inventory
          */
-        public static function addPlayerWindow(Player $player, Inventory $inventory): Window
+        public static function addPlayerWindow(Player $player, Window $inventory): Window
         {
             return self::$players[strtolower($player->getName())] = $inventory;
         }
@@ -73,6 +75,37 @@ namespace directory\window {
 
     }
 
+    class WindowHandler implements Listener {
+
+        /** @var Main */
+        protected $owner = null;
+
+        public function __construct(Plugin $plugin){
+            $this->owner = $plugin;
+        }
+
+        public function execute(InventoryTransactionEvent $event){
+            $transaction = $event->getQueue();
+            $player = $transaction->getPlayer();
+
+            if($event->isCancelled())
+                return false;
+
+            if($window = WindowManager::getPlayerWindow($player)){
+                foreach($transaction->getTransactions() as $trans){
+                    $item = $trans->getTargetItem();
+                    try {
+                        $window->getClosure()->call($window, $event, $player, $item);
+                    } catch (\Exception $exception){
+                        var_dump($exception->getMessage());
+                    }
+                }
+            }
+
+
+        }
+    }
+
     class Window extends CustomInventory implements Listener {
 
         /** @var string */
@@ -92,10 +125,20 @@ namespace directory\window {
         protected $holder = null;
 
         /** @var \Closure|callable */
-        protected $ctx = null;
+        protected $closure = null;
 
         /** @var Plugin */
         protected $owner = null;
+
+        const ALIGN_CENTER = 14;
+
+        public static function registerHandler(Listener $plugin){
+            if($plugin instanceof Plugin){
+                $plugin->getServer()->getPluginManager()->registerEvents(new WindowHandler($plugin), $plugin);
+            } else {
+                Server::getInstance()->getLogger()->alert('§cIt was not possible to register the Window system handler, as the passed class is not extended to Plugin');
+            }
+        }
 
         /**
          * Window constructor.
@@ -112,7 +155,7 @@ namespace directory\window {
             $this->pos = $position->add(0, 2);
 
             $this->customName = $name;
-            $this->ctx = $context;
+            $this->closure = $context;
 
             $this->countdown = $countdown;
 
@@ -230,24 +273,11 @@ namespace directory\window {
 
         }
 
-        public function onTransaction(InventoryTransactionEvent $event) {
-            $transaction = $event->getQueue();
-            $player = $transaction->getPlayer();
-
-            if($event->isCancelled())
-                return false;
-
-            if(WindowManager::getPlayerWindow($player) !== $this)
-                return false;
-
-            foreach($transaction->getTransactions() as $trans){
-                $item = $trans->getTargetItem();
-                try {
-                    $this->ctx->call($this, $event, $player, $item);
-                } catch (\Exception $exception){
-                    var_dump($exception);
-                }
-            }
+        /**
+         * @return callable|\Closure
+         */
+        public function getClosure(){
+            return $this->closure;
         }
     }
 }
