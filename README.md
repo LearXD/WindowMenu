@@ -1,4 +1,4 @@
-<h1 align="center"> WindowMenu Api v0.2 </h1>
+ <h1 align="center"> WindowMenu Api v0.2 </h1>
 <p align="center"> A small library for creating interactive windows. </p>
 
 <h2 align="center"> 🔨 Usage: </h1>
@@ -15,11 +15,11 @@
 ```php
 // The menu Callable receives 3 parameters, an InventoryTransacion Event (which can and should be canceled), a Player object, and an Item Object (which has been transitioned)
   
-$callable = function (InventoryTransactionEvent $event, Player $player, Item $item) {
+$callable = function (Window $window, Player $player, Item $item, InventoryTransactionEvent $event) {
   // doing a little item check...
   if($item->getId() == \pocketmine\item\Item::EMERALD and $item->getCustomName("§dItem Name")){
     // removing the window
-    $player->removeWindow(\your\directory\WindowManager::getPlayerWindow($player));
+    $player->removeWindow($window);
     // using the player variable '-'
     $player->sendMessage("§aYou used window!");
     // canceling event...
@@ -33,10 +33,10 @@ $callable = function (InventoryTransactionEvent $event, Player $player, Item $it
 
 ```php
 // Return the class from our window!
-$window = new \your\directory\Window($this->owner, $player, "Window Name", $callable);
+$window = new \your\directory\Window($player->getPosition(), "Window Name", Window::DOUBLE_CHEST, $callable);
 
 // Adding an item to the window:
-$window->setItem(\your\directory\Window::ALIGN_CENTER, \pocketmine\item\Item::get(\pocketmine\item\Item::EMERALD)->setCustomName("§dItem Name"));
+$window->setItem(15, \pocketmine\item\Item::get(\pocketmine\item\Item::EMERALD)->setCustomName("§dItem Name"));
 
 // Sending the window to a player:
 $player->addWindow($window);
