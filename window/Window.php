@@ -10,7 +10,8 @@
  *                    Author: LearXD#1044
  */
 
-namespace bedwars\libs {
+//change this to your namespace!
+namespace your\namespace {
 
     use pocketmine\event\inventory\InventoryCloseEvent;
     use pocketmine\event\inventory\InventoryOpenEvent;
