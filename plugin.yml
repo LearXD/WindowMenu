@@ -1,0 +1,5 @@
+name: WindoeMenu
+author: LearXD
+version: 1.0
+api: 2.0.0
+main: LearXD\WindowMenu
